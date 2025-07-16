@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>เพิ่ม Stock สินค้า</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; padding: 1rem; background: #f7f7f7; }
+    h2 { text-align: center; }
+    .product {
+      display: flex; justify-content: space-between;
+      margin-bottom: 10px; background: white;
+      padding: 10px; border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+    }
+    input[type="number"] {
+      width: 60px; padding: 4px;
+      border: 1px solid #ccc; border-radius: 5px;
+    }
+    button {
+      background: #00796b; color: white;
+      border: none; padding: 6px 12px;
+      border-radius: 6px; cursor: pointer;
+    }
+    button:hover {
+      background: #004d40;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📦 จัดการ Stock สินค้า</h2>
+  <div id="productList"></div>
+
+  <script>
+    // ข้อมูลสินค้าเริ่มต้น (เหมือนหน้าเลือกสินค้า)
+    const defaultProducts = Array.from({ length: 100 }, (_, i) => ({
+      id: i + 1,
+      name: `สินค้า #${i + 1}`,
+      price: 30 + (i % 10) * 5,
+      stock: 3 + (i % 8),
+      img: `im/${(i % 10) + 1}.jpg`
+    }));
+
+    // โหลด stock ปัจจุบันจาก localStorage
+    let productStock = JSON.parse(localStorage.getItem("productStock"));
+    if (!productStock) {
+      productStock = defaultProducts.map(p => ({ id: p.id, stock: p.stock }));
+      localStorage.setItem("productStock", JSON.stringify(productStock));
+    }
+
+    // รวมชื่อสินค้า + stock ล่าสุด
+    const mergedProducts = defaultProducts.map(p => {
+      const stockItem = productStock.find(s => s.id === p.id);
+      return { ...p, stock: stockItem ? stockItem.stock : p.stock };
+    });
+
+    const productList = document.getElementById("productList");
+
+    // แสดงรายการสินค้าและช่องใส่จำนวนเพิ่ม stock
+    mergedProducts.forEach(product => {
+      const item = document.createElement("div");
+      item.className = "product";
+      item.innerHTML = `
+        <div>
+          <strong>${product.name}</strong><br>
+          คงเหลือ: <span id="stock-${product.id}">${product.stock}</span> ชิ้น
+        </div>
+        <div>
+          <input type="number" id="add-${product.id}" min="1" placeholder="เพิ่ม">
+          <button onclick="addStock(${product.id})">เพิ่ม</button>
+        </div>
+      `;
+      productList.appendChild(item);
+    });
+
+    // ฟังก์ชันเพิ่ม stock แล้วอัปเดต localStorage พร้อม UI
+    function addStock(id) {
+      const input = document.getElementById(`add-${id}`);
+      const plus = parseInt(input.value);
+      if (isNaN(plus) || plus <= 0) {
+        alert("กรุณาใส่จำนวนที่ถูกต้อง");
+        return;
+      }
+
+      const index = productStock.findIndex(p => p.id === id);
+      if (index >= 0) {
+        productStock[index].stock += plus;
+        document.getElementById(`stock-${id}`).textContent = productStock[index].stock;
+      } else {
+        productStock.push({ id: id, stock: plus });
+        document.getElementById(`stock-${id}`).textContent = plus;
+      }
+
+      localStorage.setItem("productStock", JSON.stringify(productStock));
+      input.value = "";
+
+    }
+  </script>
+</body>
+</html>

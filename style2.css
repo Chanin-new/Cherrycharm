@@ -1,0 +1,90 @@
+/* style2.css */
+* {
+  box-sizing: border-box;
+  font-family: "Mitr", sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9f6f0; /* สีพื้นอ่อน */
+  color: #333;
+}
+
+h2 {
+  text-align: center;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem;
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  background: #fff;
+}
+
+th, td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+th {
+  background-color: #f0ede8;
+  font-weight: bold;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #3b36c2;
+}
+
+#total {
+  text-align: center;
+  margin: 1rem;
+  font-weight: bold;
+  color: #444;
+}
+
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus, textarea:focus {
+  border-color: #4f46e5;
+  outline: none;
+}

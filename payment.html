@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ชำระเงิน</title>
+  <style>
+    body { font-family: Mitr, sans-serif; background: #f9f9f9; padding: 20px; max-width: 600px; margin: auto; }
+    h2 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 20px; }
+    th, td { border: 1px solid #ddd; padding: 6px; }
+    th { background: #f3f3f3; }
+    input, select, button, textarea { width: 100%; padding: 8px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
+    button { background: #00897b; color: #fff; border: none; font-size: 1rem; cursor: pointer; }
+    .msg { margin-top: 20px; text-align: center; font-weight: bold; display: none; }
+    .qr-section { text-align: center; margin: 10px 0; }
+    .qr-section img { max-width: 200px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <h2>ชำระเงิน</h2>
+
+  <table id="orderTable"><thead><tr><th>สินค้า</th><th>จำนวน</th><th>ราคา</th></tr></thead><tbody></tbody></table>
+  <p id="totalPrice"></p>
+
+  <div class="qr-section">
+    <p>📌 กรุณาชำระเงินโดยสแกน QR ด้านล่าง</p>
+    <img src="im/qr.jpg" alt="QR สำหรับชำระเงิน">
+  </div>
+
+  <input id="payer" type="text" placeholder="ชื่อผู้โอนเงิน" readonly>
+
+  <label for="slip">📎 แนบสลิปชำระเงิน</label>
+  <input id="slip" type="file" accept="image/*" required>
+
+  <input id="note" type="text" placeholder="หมายเหตุ (ถ้ามี)">
+  <button id="payBtn">ยืนยันการชำระเงิน</button>
+  <div class="msg" id="doneMsg">✅ ส่งออเดอร์พร้อมสลิปเรียบร้อย!</div>
+
+  <script>
+    const pending = JSON.parse(localStorage.getItem("pendingOrder") || "null");
+    if (!pending) location.href = "index.html";
+
+    document.getElementById("payer").value = pending.fullname;
+
+    const tb = document.querySelector("#orderTable tbody");
+    let total = 0;
+    pending.cart.forEach(it => {
+      const price = it.qty * it.price;
+      total += price;
+      tb.innerHTML += `<tr><td>${it.name}</td><td>${it.qty}</td><td>${price} ฿</td></tr>`;
+    });
+    document.getElementById("totalPrice").textContent = `ยอดรวม: ${total} ฿`;
+
+    document.getElementById("payBtn").onclick = async () => {
+      const payer = document.getElementById("payer").value.trim();
+      const note = document.getElementById("note").value.trim();
+      const slip = document.getElementById("slip").files[0];
+
+      if (!slip) return alert("กรุณาแนบสลิปชำระเงิน");
+
+      try {
+        await sendDiscord(pending, payer, note, slip);
+        document.getElementById("doneMsg").style.display = "block";
+
+        // บันทึกข้อมูลคำสั่งซื้อไว้ใน localStorage สำหรับ confirm.html
+        localStorage.setItem("lastOrder", JSON.stringify(pending.cart));
+        localStorage.setItem("lastCustomer", pending.fullname);
+        localStorage.setItem("lastQueue", pending.queueCode);
+
+        // ล้างข้อมูลเก่า
+        localStorage.removeItem("pendingOrder");
+        localStorage.removeItem("cart");
+
+        // รอ 1.5 วินาทีแล้วเปลี่ยนหน้า
+        setTimeout(() => {
+          location.href = "confirm.html";
+        }, 1500);
+      } catch (e) {
+        console.error(e);
+        alert("ส่ง Discord ไม่สำเร็จ");
+      }
+    };
+
+    async function sendDiscord(data, payer, note, slipFile) {
+      const url = "https://discord.com/api/webhooks/1394335643601080433/103SA4YLfjmrR7mpcEBP8vqa9_kyjDkJE1WhkkpQJpRghNCF1ggZg2n3qz3ejwyLYikP";
+      const items = data.cart.map(i => `• ${i.name} x${i.qty} = ${i.qty * i.price}฿`).join("\n");
+      const total = data.cart.reduce((s, i) => s + i.price * i.qty, 0);
+      const embed = {
+        title: "รายละเอียดการสั่งซื้อ",
+        description: items,
+        fields: [
+          { name: "🔢 คิวที่", value: data.queueCode, inline: true },
+          { name: "👤 ผู้สั่งซื้อ", value: data.fullname, inline: true },
+          { name: "📞 เบอร์", value: data.phone, inline: true },
+          { name: "🏠 ที่อยู่", value: data.address, inline: false },
+          { name: "💰 ยอดรวม", value: `${total} ฿`, inline: true },
+          { name: "📝 ผู้ชำระ", value: payer, inline: true },
+          ...(note ? [{ name: "หมายเหตุ", value: note, inline: false }] : [])
+        ],
+        footer: { text: "ระบบร้านกาแฟออนไลน์" },
+        timestamp: new Date().toISOString()
+      };
+
+      const form = new FormData();
+      form.append("payload_json", JSON.stringify({
+        username: "ผู้ช่วยรับ order จากลูกค้า",
+        content: `📥 คิวใหม่จาก ${data.fullname}`,
+        embeds: [embed]
+      }));
+
+      for (let i = 0; i < data.cart.length && i < 10; i++) {
+        const item = data.cart[i];
+        const imgPath = `im/${(item.id % 10 || 10)}.jpg`;
+        try {
+          const res = await fetch(imgPath);
+          const blob = await res.blob();
+          form.append(`files[${i}]`, blob, `${item.name}.jpg`);
+        } catch (e) {
+          console.warn("โหลดรูปไม่ได้:", imgPath);
+        }
+      }
+
+      const slipIndex = Math.min(data.cart.length, 10);
+      form.append(`files[${slipIndex}]`, slipFile, "slip.jpg");
+
+      const res = await fetch(url, { method: "POST", body: form });
+      if (!res.ok) {
+        const msg = await res.text();
+        throw new Error(`Discord Error: ${res.status} - ${msg}`);
+      }
+    }
+  </script>
+</body>
+</html>

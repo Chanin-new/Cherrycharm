@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ยืนยันคำสั่งซื้อ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style3.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="success-icon">✅</div>
+    <h1>สั่งซื้อสำเร็จแล้ว!</h1>
+
+    <div class="queue-number" id="queueNumber"></div> <!-- เลขคิวจะแสดงตรงนี้ -->
+
+    <div class="customer-name" id="customerName"></div>
+    
+    <div class="message">
+      <p>ขอบคุณที่ใช้บริการ เราได้รับออเดอร์ของคุณแล้ว</p>
+      <p>กรุณารอสักครู่ เราจะเตรียมของให้คุณ</p>
+    </div>
+
+    <div class="order-summary" id="orderSummary">
+      <h3>📋 สรุปคำสั่งซื้อ</h3>
+      <div id="orderItems"></div>
+      <div class="total-price" id="totalPrice"></div>
+    </div>
+
+    <div class="order-time" id="orderTime"></div>
+
+    <div>
+      <a href="index.html" class="btn btn-primary">🏠 กลับหน้าหลัก</a>
+      <a href="review.html" class="btn">📝 สั่งซื้อใหม่</a>
+    </div>
+  </div>
+
+  <script>
+    function displayOrderInfo() {
+    const lastOrder    = localStorage.getItem("lastOrder");
+    const lastCustomer = localStorage.getItem("lastCustomer");
+    const lastQueue    = localStorage.getItem("lastQueue");
+
+    if (lastOrder && lastCustomer && lastQueue) {
+      // แสดงชื่อ
+      document.getElementById("customerName").textContent = `👤 คุณ ${lastCustomer}`;
+
+      // แสดงเลขคิว
+      const queueId = `A${lastQueue}`;
+      document.getElementById("queueNumber").textContent = `🧾 เลขคิวของคุณ: ${queueId}`;
+
+      // แสดงสินค้า
+      const orderItems     = JSON.parse(lastOrder);
+      const itemsContainer = document.getElementById("orderItems");
+      itemsContainer.innerHTML = orderItems.map(item => `
+        <div class="order-item">
+          <span>${item.name} x${item.qty}</span>
+          <span>${item.qty * item.price} ฿</span>
+        </div>
+      `).join('');
+
+      // ราคารวม
+      const total = orderItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+      document.getElementById("totalPrice").textContent = `รวมทั้งหมด: ${total} ฿`;
+
+      // เวลา
+      const orderTime = new Date().toLocaleString('th-TH');
+      document.getElementById("orderTime").textContent = `เวลาที่สั่ง: ${orderTime}`;
+    } else {
+      window.location.href = "index.html";
+    }
+  }
+
+  displayOrderInfo();
+
+  // เคลียร์ข้อมูลหลัง 5 นาที
+  setTimeout(() => {
+    localStorage.removeItem("lastOrder");
+    localStorage.removeItem("lastCustomer");
+  }, 300000);
+  </script>
+</body>
+</html>

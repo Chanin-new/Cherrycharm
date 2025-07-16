@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ทบทวนออเดอร์</title>
+  <link rel="stylesheet" href="style2.css" />
+  <style>
+    body { font-family: "Mitr", sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }
+    h2 { background: #fff; padding: 1rem; margin: 0; text-align: center; border-bottom: 1px solid #eee; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { padding: 0.75rem; border-bottom: 1px solid #eee; text-align: left; }
+    th { background: #fafafa; }
+    #total { text-align: center; padding: 1rem; font-weight: bold; }
+    input, textarea { width: 100%; padding: 0.6rem; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    button { padding: 0.4rem 0.8rem; background: #00897b; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .form-section { max-width: 500px; margin: auto; background: #fff; padding: 1rem; border-top: 1px solid #eee; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h2>รายการที่สามารถสั่งซื้อได้</h2>
+  <table id="review-table"></table>
+  <p id="total"></p>
+
+  <div class="form-section">
+    <input id="fullname" type="text" placeholder="ชื่อ-นามสกุล" />
+    <input id="phone" type="text" placeholder="เบอร์โทรศัพท์" />
+    <textarea id="address" placeholder="ที่อยู่สำหรับจัดส่ง"></textarea>
+    <button onclick="submitOrder()">ยืนยันสั่งซื้อ</button>
+  </div>
+
+  <script>
+    const sampleProducts = Array.from({ length: 100 }, (_, i) => ({
+      id: i + 1,
+      name: `สินค้า #${i + 1}`,
+      price: 30 + (i % 10) * 5,
+      stock: 3 + (i % 8),
+      img: `im/${(i % 10) + 1}.jpg`
+    }));
+
+    const store = {
+      get()  { return JSON.parse(localStorage.getItem("cart") || "[]"); },
+      set(c) { localStorage.setItem("cart", JSON.stringify(c)); }
+    };
+
+    const table   = document.getElementById("review-table");
+    const totalEl = document.getElementById("total");
+
+    function getProductStock() {
+      let productStock = JSON.parse(localStorage.getItem("productStock"));
+      if (!productStock) {
+        productStock = sampleProducts.map(p => ({ id: p.id, stock: p.stock }));
+        localStorage.setItem("productStock", JSON.stringify(productStock));
+      }
+      return productStock;
+    }
+
+    function setProductStock(stock) {
+      localStorage.setItem("productStock", JSON.stringify(stock));
+    }
+
+    function renderCart() {
+      const cart  = store.get();
+      const productStock = getProductStock();
+
+      const valid = cart.filter(item => {
+        const product = sampleProducts.find(p => p.id === item.id);
+        const stockItem = productStock.find(s => s.id === item.id);
+        return product && stockItem && stockItem.stock + item.qty > 0;
+      });
+
+      if (!valid.length) return location.href = "index.html";
+
+      table.innerHTML = `
+        <tr>
+          <th>สินค้า</th><th>จำนวน</th><th>ราคา</th><th>จัดการ</th>
+        </tr>` + valid.map((item, idx) => {
+          const product = sampleProducts.find(p => p.id === item.id);
+          const stockItem = productStock.find(s => s.id === item.id);
+          const canAdd  = item.qty < (stockItem ? stockItem.stock + item.qty : item.qty);
+          return `
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.qty}</td>
+              <td>${item.qty * item.price} ฿</td>
+              <td>
+                <button onclick="changeQty(${idx}, 1)" ${canAdd ? "" : "disabled"}>${canAdd ? "+" : "เต็ม"}</button>
+                <button onclick="changeQty(${idx}, -1)">-</button>
+                <button onclick="removeItem(${idx})">ลบ</button>
+              </td>
+            </tr>`;
+        }).join("");
+
+      const total = valid.reduce((sum, i) => sum + i.price * i.qty, 0);
+      totalEl.textContent = `รวมทั้งหมด: ${total} ฿`;
+      store.set(valid);
+    }
+
+    function changeQty(index, delta) {
+      const cart = store.get();
+      const item = cart[index];
+      const newQty = item.qty + delta;
+
+      let productStock = getProductStock();
+      const stockIndex = productStock.findIndex(p => p.id === item.id);
+      if (stockIndex < 0) return alert("สินค้าไม่พบในสต็อก");
+
+      const availableStock = productStock[stockIndex].stock + item.qty;
+      if (newQty > availableStock) return alert("จำนวนเกิน stock");
+
+      if (newQty <= 0) {
+        productStock[stockIndex].stock += item.qty;
+        cart.splice(index, 1);
+      } else {
+        productStock[stockIndex].stock -= delta;
+        if (productStock[stockIndex].stock < 0) productStock[stockIndex].stock = 0;
+        item.qty = newQty;
+      }
+
+      setProductStock(productStock);
+      store.set(cart);
+      if (cart.length) renderCart();
+      else location.href = "index.html";
+    }
+
+    function removeItem(index) {
+      const cart = store.get();
+      const item = cart[index];
+      let productStock = getProductStock();
+      const stockIndex = productStock.findIndex(p => p.id === item.id);
+      if (stockIndex >= 0) productStock[stockIndex].stock += item.qty;
+      cart.splice(index, 1);
+      setProductStock(productStock);
+      store.set(cart);
+      if (cart.length) renderCart();
+      else location.href = "index.html";
+    }
+
+    async function submitOrder() {
+      const fullname = document.getElementById("fullname").value.trim();
+      const phone    = document.getElementById("phone").value.trim();
+      const address  = document.getElementById("address").value.trim();
+      const cart     = store.get();
+
+      if (!fullname || !phone || !address) return alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+      if (!cart.length) return alert("ไม่มีสินค้าในตะกร้า");
+
+      const now = new Date();
+      const nowDateStr = now.toISOString().slice(0, 10);
+      const lastQueueDate = localStorage.getItem("lastQueueDate") || "";
+
+      if (now.getHours() >= 3 && lastQueueDate !== nowDateStr) {
+        localStorage.setItem("lastQueue", "0");
+        localStorage.setItem("lastQueueDate", nowDateStr);
+      } else if (lastQueueDate !== nowDateStr) {
+        localStorage.setItem("lastQueueDate", nowDateStr);
+      }
+
+      let lastQueueStr = localStorage.getItem("lastQueue");
+       let lastQueue = parseInt(lastQueueStr, 10);
+
+if (isNaN(lastQueue)) {
+  lastQueue = 0;  // ถ้าแปลงไม่ได้ ให้เริ่มต้นที่ 0
+}
+
+let queueNumber = lastQueue + 1;
+localStorage.setItem("lastQueue", queueNumber);
+const queueCode =  queueNumber;
+
+localStorage.setItem("pendingOrder", JSON.stringify({
+  fullname, phone, address, cart, queueCode
+}));
+      location.href = "payment.html";
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>

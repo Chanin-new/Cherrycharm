@@ -1,0 +1,145 @@
+* { box-sizing: border-box; }
+body { 
+    font-family: "Mitr", sans-serif; 
+    margin: 0; 
+    background-color: #FFF2E7;
+    padding-bottom: 60px;
+}
+header { 
+    padding: 1rem; background:#fafafa; 
+    position:sticky; top:0; 
+}
+#search { 
+    width:100%; 
+    padding:.6rem 1rem; 
+    font-size:1rem; 
+    border:1px solid #ddd;
+    border-radius:8px; 
+}
+.grid {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  padding: 2rem;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+}
+
+.card .code {
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 0.2rem;
+}
+
+.card h4 {
+  font-size: 1.05rem;
+  margin: 0.2rem 0;
+  color: #333;
+}
+
+.card .price {
+  font-weight: bold;
+  color: #4f46e5;
+  font-size: 1.1rem;
+  margin: 0.4rem 0;
+}
+
+.add-btn {
+  background-color: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.4rem;
+  transition: background-color 0.2s ease;
+}
+
+.add-btn:hover {
+  background-color: #3b36c2;
+}
+
+.add-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+#cart-bar { 
+    position:fixed;
+     bottom:-100%; 
+     left:0; 
+     right:0; 
+     transition:.3s; 
+     background:#4f46e5; 
+     color:#fff; 
+     padding:.8rem 1rem; 
+     display:flex; 
+     justify-content:space-between; 
+     align-items:center; }
+#cart-bar.show { 
+    bottom:0; 
+}
+.review-btn {
+     background:#fff; 
+     color:#4f46e5; 
+     padding:.4rem 1rem; 
+     border-radius:6px; 
+     border:none; 
+     cursor:pointer; 
+     font-weight:bold; 
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem;
+    }
+    th, td {
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+    }
+    .btn {
+      padding: 0.3rem 0.6rem;
+      margin: 0 0.2rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .plus { background: #4caf50; color: white; }
+    .minus { background: #f57c00; color: white; }
+    .delete { background: red; color: white; }
+    #total {
+      font-weight: bold;
+      padding: 1rem;
+    }
+
+    .heades img{
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        height: 100%;
+    }
