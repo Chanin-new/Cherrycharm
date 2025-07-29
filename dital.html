@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>รายละเอียดสินค้า</title>
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fff5f7;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 1.5rem;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      margin-top: 2rem;
+    }
+
+    .product-img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+      color: #ff69b4;
+    }
+
+    .price {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #e91e63;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      font-weight: 500;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      cursor: pointer;
+    }
+
+    .add-btn {
+      background: linear-gradient(to right, #ffb6c1, #ff69b4);
+      color: white;
+      border: none;
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .add-btn:hover {
+      background: linear-gradient(to right, #ff69b4, #ff1493);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      text-decoration: none;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="" alt="" class="product-img">
+    <h1></h1>
+    <p class="price"></p>
+
+    <div class="form-group">
+      <label for="wristSize">เลือกขนาดข้อมือของคุณ (เซนติเมตร):</label>
+      <select id="wristSize">
+        <option value="">-- เลือกขนาด --</option>
+        <option value="16 ซม.+ 3 ซม."> 16 ซม.+ 3 ซม.</option>
+        <option value="18 ซม.+ 3 ซม."> 18 ซม.+ 3 ซม.</option>
+        <option value="20 ซม.+ 3 ซม."> 20 ซม.+ 3 ซม.</option>
+        <option value="22 ซม.+ 3 ซม."> 22 ซม.+ 3 ซม.</option>
+       
+      </select>
+    </div>
+
+    <button class="add-btn" onclick="addToCart()">เพิ่มในตะกร้า</button>
+
+    <a href="index.html" class="back-link">&larr; กลับไปหน้ารายการสินค้า</a>
+  </div>
+
+  <script>
+    const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+    if (!product) {
+      alert("ไม่พบข้อมูลสินค้า กรุณากลับไปเลือกใหม่");
+      location.href = "index.html";
+    }
+
+    document.querySelector(".product-img").src = product.img;
+    document.querySelector(".product-img").alt = product.name;
+    document.querySelector("h1").innerText = product.name;
+    document.querySelector(".price").innerText = product.price.toLocaleString() + " ฿";
+
+    function addToCart() {
+      const size = document.getElementById("wristSize").value;
+      if (!size) return alert("กรุณาเลือกขนาดข้อมือก่อนเพิ่มสินค้า");
+
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const found = cart.find(i => i.id === product.id && i.size === size);
+
+      if (found) {
+        found.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1, size });
+      }
+
+      // ✅ เพิ่มการจัดการสต็อก
+      // เพิ่มการลด stock
+      let productStock = JSON.parse(localStorage.getItem("productStock") || "[]");
+      const stockIndex = productStock.findIndex(item => item.id === product.id);
+      if (stockIndex >= 0) {
+        productStock[stockIndex].stock--;
+      } else {
+        // ถ้าไม่มีใน localStorage ให้สร้างใหม่
+        productStock.push({ id: product.id, stock: product.stock - 1 });
+      }
+      localStorage.setItem("productStock", JSON.stringify(productStock));
+      
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("เพิ่มสินค้าเรียบร้อย!\nขนาดสร้อยคอ: " + size + " นิ้ว");
+      goBack();
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+</body>
+</html>

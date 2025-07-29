@@ -1,0 +1,26 @@
+{
+  "name": "jewelry-shop-backend",
+  "version": "1.0.0",
+  "description": "Backend API for jewelry e-commerce website",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": [
+    "jewelry",
+    "ecommerce",
+    "api",
+    "express"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

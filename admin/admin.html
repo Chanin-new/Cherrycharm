@@ -2,100 +2,335 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>เพิ่ม Stock สินค้า</title>
+  <title>จัดการ Stock สินค้า</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body { font-family: sans-serif; padding: 1rem; background: #f7f7f7; }
-    h2 { text-align: center; }
+    h2 { text-align: center; color: #831843; margin-bottom: 20px; }
     .product {
-      display: flex; justify-content: space-between;
+      display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 10px; background: white;
       padding: 10px; border-radius: 8px;
       box-shadow: 0 0 5px #ccc;
+    }
+    .product-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .product-image {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
     }
     input[type="number"] {
       width: 60px; padding: 4px;
       border: 1px solid #ccc; border-radius: 5px;
     }
-    button {
+    .button-group {
+      display: flex;
+      gap: 5px;
+    }
+    .add-btn {
       background: #00796b; color: white;
       border: none; padding: 6px 12px;
       border-radius: 6px; cursor: pointer;
     }
-    button:hover {
+    .reduce-btn {
+      background: #d32f2f; color: white;
+      border: none; padding: 6px 12px;
+      border-radius: 6px; cursor: pointer;
+    }
+    .add-btn:hover {
       background: #004d40;
+    }
+    .reduce-btn:hover {
+      background: #b71c1c;
+    }
+    .search-container {
+      margin-bottom: 20px;
+    }
+    #search {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .back-btn {
+      display: block;
+      margin: 20px auto;
+      background: #831843;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .back-btn:hover {
+      background: #5b0f30;
+    }
+    .category-title {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      color: #831843;
     }
   </style>
 </head>
 <body>
 
   <h2>📦 จัดการ Stock สินค้า</h2>
+  
+  <div class="search-container">
+    <input id="search" type="text" placeholder="🔍 ค้นหาสินค้า..." />
+  </div>
+  
   <div id="productList"></div>
+  
+  <button class="back-btn" onclick="window.location.href='../index.html'">กลับหน้าหลัก</button>
 
   <script>
     // ข้อมูลสินค้าเริ่มต้น (เหมือนหน้าเลือกสินค้า)
-    const defaultProducts = Array.from({ length: 100 }, (_, i) => ({
-      id: i + 1,
-      name: `สินค้า #${i + 1}`,
-      price: 30 + (i % 10) * 5,
-      stock: 3 + (i % 8),
-      img: `im/${(i % 10) + 1}.jpg`
-    }));
+    const productData = [
+      // สร้อยข้อมือ
+      { id: 1, name: "สร้อยข้อมือโซ่สีทอง", price: 129, stock: 3, img: "../im/โซ่ทอง1.png", category: "necklace" },
+      { id: 2, name: "สร้อยข้อมือบอลสีทอง", price: 129, stock: 3, img: "../im/สร้อยข้อมือบอล (ทอง).png", category: "necklace" },
+      { id: 3, name: "สร้อยข้อมือเลเยอร์", price: 149, stock: 0, img: "../im/สร้อยข้อมือ เลเยอร์ (ทอง).png", category: "necklace" },
+      { id: 4, name: "สร้อยข้อมือโซ่สีเงิน", price: 129, stock: 4, img: "../im/sเงิน.png", category: "neck2" },
+
+      // จี้สีทอง 1 (pendant)
+      { id: 5, name: "จี้ผึ้งเพชร", price: 0, stock: 4, img: "../im/1.png", category: "pendant" },
+      { id: 6, name: "จี้ดอกไม้", price: 0, stock: 4, img: "../im/2.png", category: "pendant" },
+      { id: 7, name: "จี้ดาว", price: 0, stock: 4, img: "../im/3.png", category: "pendant" },
+      { id: 8, name: "จี้หัวใจ", price: 0, stock: 4, img: "../im/4.png", category: "pendant" },
+      { id: 9, name: "จี้พริก", price: 0, stock: 4, img: "../im/5.png", category: "pendant" },
+      { id: 10, name: "จี้หอยเชล", price: 0, stock: 4, img: "../im/6.png", category: "pendant" },
+      { id: 11, name: "จี้หอยก้นแหลม", price: 0, stock: 4, img: "../im/7.png", category: "pendant" },
+      { id: 12, name: "จี้ปลาดาว", price: 0, stock: 4, img: "../im/8.png", category: "pendant" },
+
+      // จี้สีทอง 2 (pendant2)
+      { id: 13, name: "จี้เชอรี่ทอง", price: 0, stock: 4, img: "../im2/จี้เบอร์2 (สีทอง)/1.png", category: "pendant2" },
+      { id: 14, name: "จี้เชอรี่แดง", price: 0, stock: 4, img: "../im2/จี้เบอร์2 (สีทอง)/2.png", category: "pendant2" },
+      { id: 15, name: "จี้สตอเบอร์รี่", price: 0, stock: 4, img: "../im2/จี้เบอร์2 (สีทอง)/3.png", category: "pendant2" },
+      { id: 16, name: "จี้โบว์กลมทอง", price: 0, stock: 4, img: "../im2/จี้เบอร์2 (สีทอง)/4.png", category: "pendant2" },
+      { id: 17, name: "จี้ดาวเพชร", price: 0, stock: 4, img: "../im2/จี้เบอร์2 (สีทอง)/5.png", category: "pendant2" },
+      { id: 18, name: "จี้โบว์ทอง", price: 0, stock: 4, img: "../im2/จี้เบอร์2 (สีทอง)/6.png", category: "pendant2" },
+      { id: 19, name: "จี้สตอเบอรี่ทอง", price: 0, stock: 4, img: "../im2/จี้เบอร์2 (สีทอง)/7.png", category: "pendant2" },
+
+      // จี้สีทอง 3 (pendant3)
+      { id: 50, name: "จี้ผึ้งเหลืองดำ", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/1.PNG", category: "pendant3" },
+      { id: 51, name: "จี้ผึ้งทองดำ", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/2.PNG", category: "pendant3" },
+      { id: 52, name: "จี้ผึ้งขาวดำ", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/3.PNG", category: "pendant3" },
+      { id: 53, name: "จี้โหลน้ำผึ้ง", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/4.PNG", category: "pendant3" },
+      { id: 54, name: "จี้ไอซ์สกรีม", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/5.PNG", category: "pendant3" },
+      { id: 55, name: "จี้เฟรนช์ฟรายส์", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/6.PNG", category: "pendant3" },
+      { id: 56, name: "จี้โค๊ก", price: 0, stock: 4, img:"../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/7.PNG", category: "pendant3" },
+      { id: 57, name: "จี้ไพ่ A โพดำ", price: 0, stock: 4, img:"../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/8.PNG", category: "pendant3" },
+      { id: 58, name: "จี้ไพ่ A โพแดง", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/9.PNG", category: "pendant3" },
+      { id: 59, name: "จี้ดอกไม้สีทอง", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/10.PNG", category: "pendant3" },
+      { id: 60, name: "จี้ดอกทานตะวันวงรี", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/11.PNG", category: "pendant3" },
+      { id: 61, name: "จี้ดอกกุหลาบชมพูทอง", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/12.PNG", category: "pendant3" },
+      { id: 20, name: "จี้ดาวเสาร์สีทอง", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/13.PNG", category: "pendant3" },
+      { id: 21, name: "จี้หัวใจสลักสีทอง", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/14.PNG", category: "pendant3" },
+
+      // จี้สีทอง 4 (pendant4)
+      { id: 22, name: "จี้ดวงอาทิตย์", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/1.PNG", category: "pendant4" },
+      { id: 23, name: "จี้หัวใจ", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/2.PNG", category: "pendant4" },
+      { id: 24, name: "จี้ดาวเพชรทอง", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/3.PNG", category: "pendant4" },
+      { id: 25, name: "จี้หัวใจทองหินอ่อน", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/4.PNG", category: "pendant4" },
+      { id: 26, name: "จี้เต่าทอง", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/5.PNG", category: "pendant4" },
+      { id: 27, name: "จี้หมีทอง", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/6.PNG", category: "pendant4" },
+      { id: 28, name: "จี้กวางฟ้า", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/7.PNG", category: "pendant4" },
+      { id: 29, name: "จี้กวางดำ", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/8.PNG", category: "pendant4" },
+      { id: 30, name: "จี้กวางน้ำตาล", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/9.PNG", category: "pendant4" },
+
+      // จี้สีทอง 5 (pendant5)
+      { id: 31, name: "จี้ผีเสื้อทอง", price: 0, stock: 4, img: "../im6/จี้เบอร์ 5/ทอง/1.PNG", category: "pendant5" },
+      { id: 32, name: "จี้ดาวสี่แฉก", price: 0, stock: 4, img: "../im6/จี้เบอร์ 5/ทอง/2.PNG", category: "pendant5" },
+
+      // จี้เงิน 1 (pendant6)
+      { id: 33, name: "จี้หัวใจสีเงิน", price: 0, stock: 4, img: "../im/จี้เบอร์1 (เงิน)/1.png", category: "pendant6" },
+      { id: 34, name: "จี้ผี้เสื้อเงิน", price: 0, stock: 4, img: "../im/จี้เบอร์1 (เงิน)/2.png", category: "pendant6" },
+      { id: 35, name: "จี้ไข่มุกเงิน", price: 0, stock: 4, img: "../im/จี้เบอร์1 (เงิน)/3.png", category: "pendant6" },
+      { id: 37, name: "จี้ดาวเงิน", price: 0, stock: 4, img: "../im/จี้เบอร์1 (เงิน)/5.png", category: "pendant6" },
+
+      // จี้เงิน 2 (pendant7)
+      { id: 38, name: "จี้สตอเบอร์รี่เงิน", price: 0, stock: 4, img: "../im3/จี้เบอร์2 (เงิน)/1.PNG", category: "pendant7" },
+      { id: 39, name: "จี้ดอกไม้เพชร", price: 0, stock: 4, img: "../im3/จี้เบอร์2 (เงิน)/2.PNG", category: "pendant7" },
+      { id: 40, name: "จี้หัวใจเพชร", price: 0, stock: 4, img: "../im3/จี้เบอร์2 (เงิน)/3.PNG", category: "pendant7" },
+      { id: 41, name: "จี้หัวใจสีเงิน", price: 0, stock: 4, img: "../im3/จี้เบอร์2 (เงิน)/4.PNG", category: "pendant7" },
+
+      // จี้เงิน 3 (pendant8)
+      { id: 42, name: "จี้ดอกไม้สีเงิน", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/1.PNG", category: "pendant8" },
+      { id: 43, name: "จี้โลมาสีเงิน", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/2.PNG", category: "pendant8" },
+      { id: 44, name: "จี้วงรีดำเงิน", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/3.PNG", category: "pendant8" },
+      { id: 45, name: "จี้ดาวเสาร์สีเงิน", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/4.PNG", category: "pendant8" },
+      { id: 46, name: "จี้ดาว 8 แฉก ", price: 0, stock: 4, img: "../im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/5.PNG", category: "pendant8" },
+
+      // จี้เงิน 4 (pendant9)
+      { id: 47, name: "จี้หัวใจละลาย", price: 0, stock: 4, img: "../im5/จี้เบอร์4/จี้เบอร์ 4 (เงิน)/1.png", category: "pendant9" },
+
+      // จี้เงิน 5 (pendant10)
+      { id: 48, name: "จี้หัวใจสีดำ", price: 0, stock: 4, img: "../im6/จี้เบอร์ 5/เงิน/1.PNG", category: "pendant10" },
+      { id: 49, name: "จี้ผีเสื้อสีเงิน", price: 0, stock: 4, img: "../im6/จี้เบอร์ 5/เงิน/2.PNG", category: "pendant10" }
+    ];
+
+    const store = {
+      getProductStock() {
+        return JSON.parse(localStorage.getItem("productStock") || "null");
+      },
+      setProductStock(stock) {
+        localStorage.setItem("productStock", JSON.stringify(stock));
+      }
+    };
 
     // โหลด stock ปัจจุบันจาก localStorage
-    let productStock = JSON.parse(localStorage.getItem("productStock"));
-    if (!productStock) {
-      productStock = defaultProducts.map(p => ({ id: p.id, stock: p.stock }));
-      localStorage.setItem("productStock", JSON.stringify(productStock));
+    function getProductStock() {
+      let productStock = store.getProductStock();
+      if (!productStock) {
+        productStock = productData.map(p => ({ id: p.id, stock: p.stock }));
+        store.setProductStock(productStock);
+      }
+      return productStock;
     }
 
-    // รวมชื่อสินค้า + stock ล่าสุด
-    const mergedProducts = defaultProducts.map(p => {
-      const stockItem = productStock.find(s => s.id === p.id);
-      return { ...p, stock: stockItem ? stockItem.stock : p.stock };
-    });
-
     const productList = document.getElementById("productList");
+    const searchBox = document.getElementById("search");
 
-    // แสดงรายการสินค้าและช่องใส่จำนวนเพิ่ม stock
-    mergedProducts.forEach(product => {
-      const item = document.createElement("div");
-      item.className = "product";
-      item.innerHTML = `
-        <div>
-          <strong>${product.name}</strong><br>
-          คงเหลือ: <span id="stock-${product.id}">${product.stock}</span> ชิ้น
-        </div>
-        <div>
-          <input type="number" id="add-${product.id}" min="1" placeholder="เพิ่ม">
-          <button onclick="addStock(${product.id})">เพิ่ม</button>
-        </div>
-      `;
-      productList.appendChild(item);
-    });
+    // ฟังก์ชันรีเฟรชข้อมูลสินค้าและ stock
+    function getSampleProducts() {
+      const productStock = getProductStock();
+      return productData.map(p => {
+        const s = productStock.find(x => x.id === p.id);
+        return { ...p, stock: s ? s.stock : p.stock };
+      });
+    }
 
-    // ฟังก์ชันเพิ่ม stock แล้วอัปเดต localStorage พร้อม UI
-    function addStock(id) {
-      const input = document.getElementById(`add-${id}`);
-      const plus = parseInt(input.value);
-      if (isNaN(plus) || plus <= 0) {
+    // แสดงรายการสินค้าและช่องใส่จำนวนเพิ่ม/ลด stock
+    function renderProducts(filter = "") {
+      productList.innerHTML = "";
+      
+      const sampleProducts = getSampleProducts();
+      const filteredProducts = sampleProducts
+        .filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+      
+      // จัดกลุ่มสินค้าตามหมวดหมู่
+      const categories = {
+        necklace: { title: "สร้อยข้อมือสีทอง", items: [] },
+        neck2: { title: "สร้อยข้อมือสีเงิน", items: [] },
+        pendant: { title: "จี้สีทองเบอร์ 1", items: [] },
+        pendant2: { title: "จี้สีทองเบอร์ 2", items: [] },
+        pendant3: { title: "จี้สีทองเบอร์ 3", items: [] },
+        pendant4: { title: "จี้สีทองเบอร์ 4", items: [] },
+        pendant5: { title: "จี้สีทองเบอร์ 5", items: [] },
+        pendant6: { title: "จี้สีเงินเบอร์ 1", items: [] },
+        pendant7: { title: "จี้สีเงินเบอร์ 2", items: [] },
+        pendant8: { title: "จี้สีเงินเบอร์ 3", items: [] },
+        pendant9: { title: "จี้สีเงินเบอร์ 4", items: [] },
+        pendant10: { title: "จี้สีเงินเบอร์ 5", items: [] }
+      };
+      
+      // จัดกลุ่มสินค้า
+      filteredProducts.forEach(product => {
+        if (categories[product.category]) {
+          categories[product.category].items.push(product);
+        }
+      });
+      
+      // แสดงสินค้าตามหมวดหมู่
+      Object.keys(categories).forEach(category => {
+        const categoryData = categories[category];
+        if (categoryData.items.length > 0) {
+          // สร้างหัวข้อหมวดหมู่
+          const categoryTitle = document.createElement("h3");
+          categoryTitle.className = "category-title";
+          categoryTitle.textContent = categoryData.title;
+          productList.appendChild(categoryTitle);
+          
+          // แสดงสินค้าในหมวดหมู่
+          categoryData.items.forEach(product => {
+            const item = document.createElement("div");
+            item.className = "product";
+            item.innerHTML = `
+              <div class="product-info">
+                <img src="${product.img}" alt="${product.name}" class="product-image" onerror="this.src='../im/1.PNG'">
+                <div>
+                  <strong>${product.name}</strong><br>
+                  คงเหลือ: <span id="stock-${product.id}">${product.stock}</span> ชิ้น
+                </div>
+              </div>
+              <div class="button-group">
+                <input type="number" id="qty-${product.id}" min="1" value="1" placeholder="จำนวน">
+                <button class="add-btn" onclick="updateStock(${product.id}, true)">เพิ่ม</button>
+                <button class="reduce-btn" onclick="updateStock(${product.id}, false)">ลด</button>
+              </div>
+            `;
+            productList.appendChild(item);
+          });
+        }
+      });
+    }
+
+    // ฟังก์ชันเพิ่ม/ลด stock แล้วอัปเดต localStorage พร้อม UI
+    function updateStock(id, isAdd) {
+      const input = document.getElementById(`qty-${id}`);
+      const qty = parseInt(input.value);
+      if (isNaN(qty) || qty <= 0) {
         alert("กรุณาใส่จำนวนที่ถูกต้อง");
         return;
       }
 
+      let productStock = getProductStock();
       const index = productStock.findIndex(p => p.id === id);
+      
       if (index >= 0) {
-        productStock[index].stock += plus;
+        if (!isAdd && productStock[index].stock < qty) {
+          alert(`ไม่สามารถลดสต๊อกได้ เนื่องจากเหลือเพียง ${productStock[index].stock} ชิ้น`);
+          return;
+        }
+        
+        productStock[index].stock = isAdd ? 
+          productStock[index].stock + qty : 
+          productStock[index].stock - qty;
+          
         document.getElementById(`stock-${id}`).textContent = productStock[index].stock;
       } else {
-        productStock.push({ id: id, stock: plus });
-        document.getElementById(`stock-${id}`).textContent = plus;
+        if (!isAdd) {
+          alert("ไม่สามารถลดสต๊อกได้ เนื่องจากไม่มีสินค้าในสต๊อก");
+          return;
+        }
+        
+        productStock.push({ id: id, stock: qty });
+        document.getElementById(`stock-${id}`).textContent = qty;
       }
 
-      localStorage.setItem("productStock", JSON.stringify(productStock));
-      input.value = "";
-
+      store.setProductStock(productStock);
+      input.value = "1";
+      
+      // แสดงการอัปเดตสำเร็จ
+      const button = isAdd ? 
+        document.querySelector(`.product:has(#qty-${id}) .add-btn`) : 
+        document.querySelector(`.product:has(#qty-${id}) .reduce-btn`);
+      
+      const originalText = button.textContent;
+      const originalColor = button.style.background;
+      
+      button.textContent = isAdd ? "✓ เพิ่มแล้ว" : "✓ ลดแล้ว";
+      button.style.background = "#2ecc71";
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = originalColor;
+      }, 1000);
     }
+
+    // เริ่มต้นแสดงผล
+    renderProducts();
+    searchBox.oninput = e => renderProducts(e.target.value);
   </script>
 </body>
 </html>

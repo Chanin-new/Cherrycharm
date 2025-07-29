@@ -2,25 +2,380 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ชำระเงิน</title>
   <style>
-    body { font-family: Mitr, sans-serif; background: #f9f9f9; padding: 20px; max-width: 600px; margin: auto; }
-    h2 { text-align: center; }
-    table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 20px; }
-    th, td { border: 1px solid #ddd; padding: 6px; }
-    th { background: #f3f3f3; }
-    input, select, button, textarea { width: 100%; padding: 8px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
-    button { background: #00897b; color: #fff; border: none; font-size: 1rem; cursor: pointer; }
-    .msg { margin-top: 20px; text-align: center; font-weight: bold; display: none; }
-    .qr-section { text-align: center; margin: 10px 0; }
-    .qr-section img { max-width: 200px; border-radius: 10px; }
+    @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Mitr', sans-serif;
+    }
+    
+    body {
+      background-color: #fdf2f8;
+      color: #831843;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #be185d;
+      text-align: center;
+      margin: 20px 0;
+      font-weight: 600;
+      font-size: 1.8rem;
+      padding: 0 15px;
+    }
+    
+    table {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 20px;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(236, 72, 153, 0.1);
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #fbcfe8;
+    }
+    
+    th {
+      background-color: #fce7f3;
+      color: #be185d;
+      font-weight: 500;
+    }
+    
+    #totalPrice {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #be185d;
+      text-align: right;
+      margin: 20px auto;
+      max-width: 800px;
+      padding: 0 15px;
+    }
+    
+    .qr-section {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px auto;
+      max-width: 800px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(236, 72, 153, 0.1);
+    }
+    
+    .qr-section p {
+      color: #831843;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    
+    .qr-section img {
+      max-width: 200px;
+      border-radius: 10px;
+      border: 1px solid #fbcfe8;
+    }
+    
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+    
+    label {
+      display: block;
+      color: #831843;
+      font-weight: 500;
+      margin-top: 15px;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 8px 0 15px;
+      border-radius: 8px;
+      border: 1px solid #fbcfe8;
+      background-color: #fdf2f8;
+      font-size: 1rem;
+      color: #831843;
+    }
+    
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #ec4899;
+      background-color: white;
+    }
+    
+    input[type="file"] {
+      padding: 8px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #ec4899;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin: 10px 0;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      background-color: #db2777;
+      transform: translateY(-2px);
+    }
+    
+    .msg {
+      background-color: #f0fdf4;
+      color: #166534;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+      margin: 20px 0;
+      display: none;
+      border: 1px solid #bbf7d0;
+    }
+    
+    /* ส่วนหัว */
+    header {
+      padding: 1rem;
+      background: pink;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    #top {
+      position: relative;
+      background-color: #E282A8;
+      border-radius: 50%;
+      color: white;
+      text-decoration: none;
+      width: 50px;
+      height: 50px;
+      right: 97%;
+      font-size: 30px;
+      padding: 0px 8px;
+    }
+
+    .top-nav img {
+      width: 100px;
+      height: auto;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #search {
+      padding: 0rem 1rem;
+      font-size: 1rem;
+      border-radius: 30px;
+      border: 1px solid #f0d6df;
+      background-color: #fff9fa;
+      outline: none;
+      width: 200px;
+      position: relative;
+      margin-top: 10px;
+      left: 35%;
+      
+    }
+
+    #buy-more-btn {
+      background-color: #E282A8;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      right: 70%;
+      position: relative;
+
+    }
+
+    
+    .top-nav img {
+      width: 100px;
+      height: auto;
+    }
+    
+    #search {
+      position: relative;
+      left: 88%;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #f0d6df;
+      background-color: #fff9fa;
+      width: 200px;
+      margin-top: 12px;
+    }
+    
+    #t1 {
+      position: relative;
+      left: 28%;
+      background-color: #E282A8;
+      color: white;
+      padding: 3px 15px;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+    
+    
+    
+    @media (max-width: 768px) {
+       header {
+        padding: 0px;
+        position: relative;
+      }
+      .top-nav {
+        gap: 1rem;
+      }
+      
+      .top-nav img {
+        position: relative;
+        transform: none;
+        order: 1;
+        width: 80px;
+        margin: 0 auto;
+        left: -30%;
+      }
+      
+      .search-container {
+        order: 2;
+        width: 100%;
+        justify-content: flex-end;
+      }
+      
+      #search {
+        width: 100%;
+        position: relative;
+        max-width: 90px;
+        left: 80%;
+        margin-top: 12px;
+      }
+      #t1{
+        position: relative;
+        left: 39%;
+        padding: 2px 15px 2px 15px;
+      }
+
+      #top {
+        position: relative;
+        left: -38%;
+        font-size: 40px;
+        width: 50px;
+        height: 50px;
+        padding: 10px 10px 16px 10px;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+      
+      th, td {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+      
+      .qr-section img {
+        max-width: 180px;
+      }
+    }
+
+    @media (max-width: 480px){
+
+    header{
+      margin: 0;
+      padding: 10px;
+    }
+      .top-nav #top {
+    width: 50px;
+    height: 50px;
+    background-color: #E282A8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    left: -57%;
+  }
+
+  .top-nav #top i {
+    color: white;
+    font-size: 20px;
+  }
+
+      .top-nav img {
+        position: relative;
+        left: -38%;
+      }
+
+      #search {
+        position: relative;
+        bottom: 14px;
+        left: 75%;
+      }
+
+      #t1{
+        position: relative;
+        bottom: -25px;
+        left: 45%;
+      }
+    }
   </style>
 </head>
 <body>
+  <header>
+    <div class="top-nav">
+      <img src="im/Logo2.png" alt="logo">
+      <input id="search" type="text" placeholder="🔍 ค้นหาสินค้า...">
+      <a href="jee.html" id="t1">ซื้อจี้เพิ่มเติม</a>
+      <a href="review.html" id="top">←</a>
+    </div>
+  </header>
+
   <h2>ชำระเงิน</h2>
 
-  <table id="orderTable"><thead><tr><th>สินค้า</th><th>จำนวน</th><th>ราคา</th></tr></thead><tbody></tbody></table>
+  <table id="orderTable">
+    <thead>
+      <tr>
+        <th>สินค้า</th>
+        <th>ไซส์</th>
+        <th>จำนวน</th>
+        <th>ราคา</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
   <p id="totalPrice"></p>
 
   <div class="qr-section">
@@ -28,107 +383,248 @@
     <img src="im/qr.jpg" alt="QR สำหรับชำระเงิน">
   </div>
 
-  <input id="payer" type="text" placeholder="ชื่อผู้โอนเงิน" readonly>
+  <div class="form-container">
+    <label for="payer">ชื่อผู้โอนเงิน</label>
+    <input id="payer" type="text" placeholder="ชื่อผู้โอนเงิน" readonly>
 
-  <label for="slip">📎 แนบสลิปชำระเงิน</label>
-  <input id="slip" type="file" accept="image/*" required>
+    <label for="slip">📎 แนบสลิปชำระเงิน</label>
+    <input id="slip" type="file" accept="image/*" required>
 
-  <input id="note" type="text" placeholder="หมายเหตุ (ถ้ามี)">
-  <button id="payBtn">ยืนยันการชำระเงิน</button>
-  <div class="msg" id="doneMsg">✅ ส่งออเดอร์พร้อมสลิปเรียบร้อย!</div>
+    <label for="note">หมายเหตุ (ถ้ามี)</label>
+    <input id="note" type="text" placeholder="หมายเหตุ">
+
+    <button id="payBtn">ยืนยันการชำระเงิน</button>
+    <div class="msg" id="doneMsg">✅ ส่งออเดอร์พร้อมสลิปเรียบร้อย!</div>
+    <!-- เพิ่มข้อความแจ้งเตือนการส่งข้อมูล -->
+    <div class="loading-msg" id="loadingMsg">⏳ รอซักครู่ ระบบกำลังส่งออเดอร์...</div>
+  </div>
 
   <script>
-    const pending = JSON.parse(localStorage.getItem("pendingOrder") || "null");
-    if (!pending) location.href = "index.html";
+    // ดึงข้อมูลจาก pendingOrder ใน localStorage
+    const pendingOrder = JSON.parse(localStorage.getItem("pendingOrder"));
+    
+    if (!pendingOrder) {
+      alert("ไม่พบข้อมูลการสั่งซื้อ กรุณาสั่งซื้อใหม่");
+      window.location.href = "review.html";
+    }
 
-    document.getElementById("payer").value = pending.fullname;
-
-    const tb = document.querySelector("#orderTable tbody");
+    // เตรียมข้อมูลสำหรับแสดงผล
+    document.getElementById("payer").value = pendingOrder.fullname;
+    
+    const tbody = document.querySelector("#orderTable tbody");
     let total = 0;
-    pending.cart.forEach(it => {
-      const price = it.qty * it.price;
+    
+    // แสดงรายการสินค้า
+    pendingOrder.items.forEach(item => {
+      const price = item.qty * item.price;
       total += price;
-      tb.innerHTML += `<tr><td>${it.name}</td><td>${it.qty}</td><td>${price} ฿</td></tr>`;
+      tbody.innerHTML += `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.size || '-'}</td>
+          <td>${item.qty}</td>
+          <td>${price.toLocaleString()} ฿</td>
+        </tr>
+      `;
     });
-    document.getElementById("totalPrice").textContent = `ยอดรวม: ${total} ฿`;
+    
+    document.getElementById("totalPrice").textContent = `ยอดรวม: ${total.toLocaleString()} ฿`;
 
+    // เมื่อกดปุ่มยืนยันการชำระเงิน
     document.getElementById("payBtn").onclick = async () => {
-      const payer = document.getElementById("payer").value.trim();
-      const note = document.getElementById("note").value.trim();
       const slip = document.getElementById("slip").files[0];
-
-      if (!slip) return alert("กรุณาแนบสลิปชำระเงิน");
+      const note = document.getElementById("note").value.trim();
+      
+      if (!slip) {
+        alert("กรุณาแนบสลิปชำระเงิน");
+        return;
+      }
 
       try {
-        await sendDiscord(pending, payer, note, slip);
+        // แสดงข้อความกำลังส่งข้อมูล
+        document.getElementById("loadingMsg").style.display = "block";
+        document.getElementById("payBtn").disabled = true;
+        document.getElementById("payBtn").textContent = "กำลังส่งข้อมูล...";
+        
+        // ส่งข้อมูลไปยัง Discord
+        await sendToDiscord(pendingOrder, slip, note);
+        
+        // ซ่อนข้อความกำลังส่งข้อมูล
+        document.getElementById("loadingMsg").style.display = "none";
+        
+        // แสดงข้อความสำเร็จ
         document.getElementById("doneMsg").style.display = "block";
-
-        // บันทึกข้อมูลคำสั่งซื้อไว้ใน localStorage สำหรับ confirm.html
-        localStorage.setItem("lastOrder", JSON.stringify(pending.cart));
-        localStorage.setItem("lastCustomer", pending.fullname);
-        localStorage.setItem("lastQueue", pending.queueCode);
-
-        // ล้างข้อมูลเก่า
+        
+        // บันทึกข้อมูลสำหรับหน้า confirm
+        localStorage.setItem("lastOrder", JSON.stringify(pendingOrder.items));
+        localStorage.setItem("lastCustomer", pendingOrder.fullname);
+        localStorage.setItem("lastQueue", pendingOrder.queueCode);
+        
+        // ลบข้อมูล pending order
         localStorage.removeItem("pendingOrder");
-        localStorage.removeItem("cart");
-
-        // รอ 1.5 วินาทีแล้วเปลี่ยนหน้า
+        
+        // เปลี่ยนหน้าไปยัง confirm.html หลังจาก 1.5 วินาที
         setTimeout(() => {
-          location.href = "confirm.html";
+          window.location.href = "confirm.html";
         }, 1500);
-      } catch (e) {
-        console.error(e);
-        alert("ส่ง Discord ไม่สำเร็จ");
+        
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาด:", error);
+        
+        // ซ่อนข้อความกำลังส่งข้อมูลและเปิดใช้งานปุ่มใหม่
+        document.getElementById("loadingMsg").style.display = "none";
+        document.getElementById("payBtn").disabled = false;
+        document.getElementById("payBtn").textContent = "ยืนยันการชำระเงิน";
+        
+        alert("ส่งข้อมูลไม่สำเร็จ: " + error.message);
       }
     };
 
-    async function sendDiscord(data, payer, note, slipFile) {
-      const url = "https://discord.com/api/webhooks/1394335643601080433/103SA4YLfjmrR7mpcEBP8vqa9_kyjDkJE1WhkkpQJpRghNCF1ggZg2n3qz3ejwyLYikP";
-      const items = data.cart.map(i => `• ${i.name} x${i.qty} = ${i.qty * i.price}฿`).join("\n");
-      const total = data.cart.reduce((s, i) => s + i.price * i.qty, 0);
+    // ฟังก์ชันส่งข้อมูลไปยัง Discord
+    async function sendToDiscord(orderData, slipFile, note) {
+      // เปลี่ยนเป็น Webhook URL ของคุณ
+      const webhookUrl = 'https://discordapp.com/api/webhooks/1394335643601080433/103SA4YLfjmrR7mpcEBP8vqa9_kyjDkJE1WhkkpQJpRghNCF1ggZg2n3qz3ejwyLYikP';
+      
+      // สร้าง Embed message
       const embed = {
-        title: "รายละเอียดการสั่งซื้อ",
-        description: items,
+        title: `💰 การชำระเงินสำหรับออเดอร์ #${orderData.queueCode}`,
+        color: 0x00AA00, // สีเขียว
         fields: [
-          { name: "🔢 คิวที่", value: data.queueCode, inline: true },
-          { name: "👤 ผู้สั่งซื้อ", value: data.fullname, inline: true },
-          { name: "📞 เบอร์", value: data.phone, inline: true },
-          { name: "🏠 ที่อยู่", value: data.address, inline: false },
-          { name: "💰 ยอดรวม", value: `${total} ฿`, inline: true },
-          { name: "📝 ผู้ชำระ", value: payer, inline: true },
-          ...(note ? [{ name: "หมายเหตุ", value: note, inline: false }] : [])
+          {
+            name: "ลูกค้า",
+            value: orderData.fullname,
+            inline: true
+          },
+          {
+            name: "โทรศัพท์",
+            value: orderData.phone,
+            inline: true
+          },
+          {
+            name: "ที่อยู่จัดส่ง",
+            value: orderData.address,
+            inline: false
+          },
+          {
+            name: "รายการสินค้า",
+            value: orderData.items.map(item => 
+              `• ${item.name} (${item.size || '-'}) x${item.qty} = ${(item.price * item.qty).toLocaleString()} ฿`
+            ).join('\n'),
+            inline: false
+          },
+          {
+            name: "ยอดรวม",
+            value: `${orderData.total.toLocaleString()} ฿`,
+            inline: true
+          },
+          ...(note ? [{
+            name: "หมายเหตุ",
+            value: note,
+            inline: false
+          }] : [])
         ],
-        footer: { text: "ระบบร้านกาแฟออนไลน์" },
         timestamp: new Date().toISOString()
       };
 
-      const form = new FormData();
-      form.append("payload_json", JSON.stringify({
-        username: "ผู้ช่วยรับ order จากลูกค้า",
-        content: `📥 คิวใหม่จาก ${data.fullname}`,
-        embeds: [embed]
+      // ส่งข้อความหลักพร้อมสลิป
+      const mainFormData = new FormData();
+      mainFormData.append('payload_json', JSON.stringify({
+        embeds: [embed],
+        content: `💳 มีการชำระเงินสำหรับออเดอร์ #${orderData.queueCode}`
       }));
+      
+      // เพิ่มไฟล์สลิป
+      mainFormData.append('file', slipFile, 'slip.jpg');
+      
+      // ส่งข้อความหลัก
+      const mainResponse = await fetch(webhookUrl, {
+        method: 'POST',
+        body: mainFormData
+      });
 
-      for (let i = 0; i < data.cart.length && i < 10; i++) {
-        const item = data.cart[i];
-        const imgPath = `im/${(item.id % 10 || 10)}.jpg`;
-        try {
-          const res = await fetch(imgPath);
-          const blob = await res.blob();
-          form.append(`files[${i}]`, blob, `${item.name}.jpg`);
-        } catch (e) {
-          console.warn("โหลดรูปไม่ได้:", imgPath);
-        }
+      if (!mainResponse.ok) {
+        throw new Error(`ไม่สามารถส่งข้อมูลหลักไป Discord ได้ (${mainResponse.status})`);
       }
 
-      const slipIndex = Math.min(data.cart.length, 10);
-      form.append(`files[${slipIndex}]`, slipFile, "slip.jpg");
+      // ส่งรูปภาพสินค้าแบบ parallel และเพิ่มจำนวนรูปต่อกลุม
+      const itemsPerBatch = 8; // เพิ่มจำนวนรูปต่อกลุม
+      const totalBatches = Math.ceil(orderData.items.length / itemsPerBatch);
+      
+      // สร้าง array ของ promises สำหรับส่งแบบ parallel
+      const batchPromises = [];
+      
+      for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+        const startIndex = batchIndex * itemsPerBatch;
+        const endIndex = Math.min(startIndex + itemsPerBatch, orderData.items.length);
+        const batchItems = orderData.items.slice(startIndex, endIndex);
+        
+        if (batchItems.length === 0) continue;
+        
+        // สร้าง promise สำหรับแต่ละกลุม
+        const batchPromise = (async () => {
+          const batchFormData = new FormData();
+          batchFormData.append('payload_json', JSON.stringify({
+            content: `📦 รูปภาพสินค้าสำหรับออเดอร์ #${orderData.queueCode} (ชุดที่ ${batchIndex + 1}/${totalBatches})`
+          }));
+          
+          let fileCount = 0;
+          
+          // โหลดรูปภาพสินค้าในกลุมนี้
+          const imagePromises = batchItems.map(async (item, i) => {
+            try {
+              let imageBlob;
+              
+              // ตรวจสอบว่า image เป็น URL เต็มหรือไม่
+              if (item.image && (item.image.startsWith('http') || item.image.startsWith('data:image'))) {
+                const response = await fetch(item.image);
+                imageBlob = await response.blob();
+              } else if (item.image) {
+                const response = await fetch(item.image);
+                imageBlob = await response.blob();
+              } else {
+                return null;
+              }
+              
+              return {
+                blob: imageBlob,
+                name: `${item.name.replace(/[^a-zA-Z0-9ก-๙]/g, '_')}_${i}.jpg`
+              };
+              
+            } catch (error) {
+              console.warn("ไม่สามารถโหลดรูปภาพสินค้า:", item.image, error);
+              return null;
+            }
+          });
+          
+          // รอให้รูปภาพทั้งหมดในกลุมนี้โหลดเสร็จ
+          const imageResults = await Promise.all(imagePromises);
+          
+          // เพิ่มรูปภาพที่โหลดสำเร็จลงใน FormData
+          imageResults.forEach((result) => {
+            if (result) {
+              batchFormData.append(`file${fileCount}`, result.blob, result.name);
+              fileCount++;
+            }
+          });
+          
+          // ส่งกลุมรูปภาพนี้ถ้ามีรูปภาพ
+          if (fileCount > 0) {
+            const batchResponse = await fetch(webhookUrl, {
+              method: 'POST',
+              body: batchFormData
+            });
 
-      const res = await fetch(url, { method: "POST", body: form });
-      if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(`Discord Error: ${res.status} - ${msg}`);
+            if (!batchResponse.ok) {
+              console.warn(`ไม่สามารถส่งรูปภาพกลุมที่ ${batchIndex + 1} ไป Discord ได้ (${batchResponse.status})`);
+            }
+          }
+        })();
+        
+        batchPromises.push(batchPromise);
       }
+      
+      // รอให้ทุกกลุมส่งเสร็จ (แบบ parallel)
+      await Promise.allSettled(batchPromises);
     }
   </script>
 </body>

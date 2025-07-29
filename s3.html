@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  
+  <title>เลือกสินค้า</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Mobile Styles for 480px */
+    @media (max-width: 480px) {
+      .top-nav {
+        display: none;
+      }
+      
+      /* Mobile Header */
+      .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ff6b9d, #ff8fab);
+        padding: 15px;
+        color: white;
+        position: relative;
+      }
+      
+      .back-btn {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        color: white;
+        text-decoration: none;
+        font-size: 24px;
+        z-index: 1002;
+      }
+      
+      .hamburger-menu {
+        position: absolute;
+        top: 50px;
+        left: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1001;
+      }
+      
+      .mobile-header h1 {
+        margin: 0;
+        font-size: 18px;
+        text-align: center;
+        margin-top: 30px;
+      }
+      
+      /* Slide Menu */
+      .slide-menu {
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 300px;
+        height: 100vh;
+        background: white;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        transition: left 0.3s ease;
+        z-index: 1000;
+        padding: 20px;
+      }
+      
+      .slide-menu.active {
+        left: 0;
+      }
+      
+      .slide-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .slide-menu-header h3 {
+        margin: 0;
+        color: #333;
+      }
+      
+      .close-menu {
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+      }
+      
+      .menu-search {
+        margin-bottom: 20px;
+      }
+      
+      .menu-search input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ff6b9d;
+        border-radius: 25px;
+        font-size: 16px;
+        outline: none;
+      }
+      
+      .menu-search input:focus {
+        border-color: #ff8fab;
+        box-shadow: 0 0 10px rgba(255, 107, 157, 0.3);
+      }
+      
+      .menu-buy-pendant {
+        background: linear-gradient(135deg, #ff6b9d, #ff8fab);
+        color: white;
+        border: none;
+        padding: 15px 20px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+      
+      .menu-buy-pendant:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+      }
+      
+      /* Overlay */
+      .menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+      
+      .menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+      
+      /* Hide desktop header on mobile */
+      header {
+        display: none;
+      }
+      
+      /* Adjust main content */
+      .products-container {
+        padding-top: 20px;
+      }
+      .mobile-header img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+    
+    /* Desktop styles */
+    @media (min-width: 481px) {
+      .mobile-header,
+      .slide-menu,
+      .menu-overlay {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Desktop Header -->
+  <header>
+    <div class="top-nav">
+      <input id="search" type="text" placeholder="🔍 ค้นหาสินค้า..." />
+      <a href="jee.html" id="t1">ซื้อจี้เพิ่มเติม</a>
+      <a href="ฺีBug2.html" id="top">←</a>
+      <img src="im/Logo2.png" alt="logo">
+    </div>
+  </header>
+  
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <a href="ฺีBug2.html" class="back-btn">←</a>
+    <div class="hamburger-menu" onclick="toggleMenu()">
+      <i class="fas fa-bars"></i>
+    </div>
+    <img src="im/Logo2.png" alt="logo">
+  </div>
+  
+  <!-- Slide Menu -->
+  <div class="menu-overlay" onclick="closeMenu()"></div>
+  <div class="slide-menu" id="slideMenu">
+    <div class="slide-menu-header">
+      <h3>เมนู</h3>
+      <div class="close-menu" onclick="closeMenu()">
+        <i class="fas fa-times"></i>
+      </div>
+    </div>
+    
+    <div class="menu-search">
+      <input id="mobile-search" type="text" placeholder="🔍 ค้นหาสินค้า..." />
+    </div>
+    
+    <button class="menu-buy-pendant" onclick="goToBuyPendant()">
+      <i class="fas fa-gem"></i> ซื้อจี้เพิ่มเติม
+    </button>
+  </div>
+
+  <div class="header-image-container">
+    <img src="#" alt="" class="">
+  </div>
+
+  <div class="products-container">
+    <h1 class="category-title">กรุณาเลือกสร้อยข้อมือก่อนเลือกจี้</h1>
+    <h2 class="category-title">สร้อยข้อมือสีทอง</h2>
+    <div class="grid" id="necklace-grid"></div>
+
+    <h2 class="category-title">สร้อยข้อมือสีเงิน</h2>
+    <div class="grid" id="neck2-grid"></div>
+    
+    <img src="im\IMG_4682.PNG" alt="">
+    <h1 class="category-title">จี้สีทอง</h1>
+
+    <h2 class="category-title">จี้สีทองเบอร์ 1</h2>
+    <div class="grid" id="pendant-grid"></div>
+
+    <h2 class="category-title">จี้สีทองเบอร์ 2</h2>
+    <div class="grid" id="pendant2-grid"></div>
+
+    <h2 class="category-title">จี้สีทองเบอร์ 3</h2>
+    <div class="grid" id="pendant3-grid"></div>
+
+    <h2 class="category-title">จี้สีทองเบอร์ 4</h2>
+    <div class="grid" id="pendant4-grid"></div>
+
+    <h2 class="category-title">จี้สีทองเบอร์ 5</h2>
+    <div class="grid" id="pendant5-grid"></div>
+     
+    <h1 class="category-title">จี้สีเงิน</h1>
+
+    <h2 class="category-title">จี้สีเงินเบอร์ 1</h2>
+    <div class="grid" id="pendant6-grid"></div>
+
+    <h2 class="category-title">จี้สีเงินเบอร์ 2</h2>
+    <div class="grid" id="pendant7-grid"></div>
+
+    <h2 class="category-title">จี้สีเงินเบอร์ 3</h2>
+    <div class="grid" id="pendant8-grid"></div>
+
+    <h2 class="category-title">จี้สีเงินเบอร์ 4</h2>
+    <div class="grid" id="pendant9-grid"></div>
+
+    <h2 class="category-title">จี้สีเงินเบอร์ 5</h2>
+    <div class="grid" id="pendant10-grid"></div>
+
+  </div>
+
+  <div id="cart-bar">
+    <span id="cart-info"></span>
+    <button class="review-btn">
+      <i class="fas fa-shopping-bag"></i> ทบทวนออเดอร์
+    </button>
+  </div>
+
+  <!-- Modal สำหรับขยายรูปภาพ -->
+  <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="expandedImage">
+  </div>
+  
+ <script>
+// ... existing code ...
+      // ข้อมูลสินค้า
+  const productData = [
+// สร้อยข้อมือ
+  { id: 1, name: "สร้อยข้อมือโซ่สีทอง", price: 249, stock: 3, img: "im/โซ่ทอง1.png", category: "necklace" },
+  { id: 2, name: "สร้อยข้อมือบอลสีทอง", price: 249, stock: 3, img: "im/สร้อยข้อมือบอล (ทอง).png", category: "necklace" },
+  { id: 3, name: "สร้อยข้อมือเลเยอร์", price: 269, stock: 0, img: "im/สร้อยข้อมือ เลเยอร์ (ทอง).png", category: "necklace" },
+  { id: 4, name: "สร้อยข้อมือโซ่สีเงิน", price: 249, stock: 4, img: "im/sเงิน.png", category: "neck2" },
+
+  // จี้สีทอง 1 (pendant)
+  { id: 5, name: "จี้ผึ้งเพชร", price: 0, stock: 4, img: "im/1.png", category: "pendant" },
+  { id: 6, name: "จี้ดอกไม้", price: 0, stock: 4, img: "im/2.png", category: "pendant" },
+  { id: 7, name: "จี้ดาว", price: 0, stock: 4, img: "im/3.png", category: "pendant" },
+  { id: 8, name: "จี้หัวใจ", price: 0, stock: 4, img: "im/4.png", category: "pendant" },
+  { id: 9, name: "จี้พริก", price: 0, stock: 4, img: "im/5.png", category: "pendant" },
+  { id: 10, name: "จี้หอยเชล", price: 0, stock: 4, img: "im/6.png", category: "pendant" },
+  { id: 11, name: "จี้หอยก้นแหลม", price: 0, stock: 4, img: "im/7.png", category: "pendant" },
+  { id: 12, name: "จี้ปลาดาว", price: 0, stock: 4, img: "im/8.png", category: "pendant" },
+
+  // จี้สีทอง 2 (pendant2)
+  { id: 13, name: "จี้เชอรี่ทอง", price: 0, stock: 4, img: "im2/จี้เบอร์2 (สีทอง)/1.png", category: "pendant2" },
+  { id: 14, name: "จี้เชอรี่แดง", price: 0, stock: 4, img: "im2/จี้เบอร์2 (สีทอง)/2.png", category: "pendant2" },
+  { id: 15, name: "จี้สตอเบอร์รี่", price: 0, stock: 4, img: "im2/จี้เบอร์2 (สีทอง)/3.png", category: "pendant2" },
+  { id: 16, name: "จี้โบว์กลมทอง", price: 0, stock: 4, img: "im2/จี้เบอร์2 (สีทอง)/4.png", category: "pendant2" },
+  { id: 17, name: "จี้ดาวเพชร", price: 0, stock: 4, img: "im2/จี้เบอร์2 (สีทอง)/5.png", category: "pendant2" },
+  { id: 18, name: "จี้โบว์ทอง", price: 0, stock: 4, img: "im2/จี้เบอร์2 (สีทอง)/6.png", category: "pendant2" },
+  { id: 19, name: "จี้สตอเบอรี่ทอง", price: 0, stock: 4, img: "im2/จี้เบอร์2 (สีทอง)/7.png", category: "pendant2" },
+
+  // จี้สีทอง 3 (pendant3)
+  { id: 50, name: "จี้ผึ้งเหลืองดำ", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/1.PNG", category: "pendant3" },
+  { id: 51, name: "จี้ผึ้งทองดำ", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/2.PNG", category: "pendant3" },
+  { id: 52, name: "จี้ผึ้งขาวดำ", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/3.PNG", category: "pendant3" },
+  { id: 53, name: "จี้โหลน้ำผึ้ง", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/4.PNG", category: "pendant3" },
+  { id: 54, name: "จี้ไอซ์สกรีม", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/5.PNG", category: "pendant3" },
+  { id: 55, name: "จี้เฟรนช์ฟรายส์", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/6.PNG", category: "pendant3" },
+  { id: 56, name: "จี้โค๊ก", price: 0, stock: 4, img:"im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/7.PNG", category: "pendant3" },
+  { id: 57, name: "จี้ไพ่ A โพดำ", price: 0, stock: 4, img:"im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/8.PNG", category: "pendant3" },
+  { id: 58, name: "จี้ไพ่ A โพแดง", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/9.PNG", category: "pendant3" },
+  { id: 59, name: "จี้ดอกไม้สีทอง", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/10.PNG", category: "pendant3" },
+  { id: 60, name: "จี้ดอกทานตะวันวงรี", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/11.PNG", category: "pendant3" },
+  { id: 61, name: "จี้ดอกกุหลาบชมพูทอง", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/12.PNG", category: "pendant3" },
+  { id: 20, name: "จี้ดาวเสาร์สีทอง", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/13.PNG", category: "pendant3" },
+  { id: 21, name: "จี้หัวใจสลักสีทอง", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์3 (ทอง)/14.PNG", category: "pendant3" },
+
+  // จี้สีทอง 4 (pendant4)
+  { id: 22, name: "จี้ดวงอาทิตย์", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/1.PNG", category: "pendant4" },
+  { id: 23, name: "จี้หัวใจ", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/2.PNG", category: "pendant4" },
+  { id: 24, name: "จี้ดาวเพชรทอง", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/3.PNG", category: "pendant4" },
+  { id: 25, name: "จี้หัวใจทองหินอ่อน", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/4.PNG", category: "pendant4" },
+  { id: 26, name: "จี้เต่าทอง", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/5.PNG", category: "pendant4" },
+  { id: 27, name: "จี้หมีทอง", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/6.PNG", category: "pendant4" },
+  { id: 28, name: "จี้กวางฟ้า", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/7.PNG", category: "pendant4" },
+  { id: 29, name: "จี้กวางดำ", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/8.PNG", category: "pendant4" },
+  { id: 30, name: "จี้กวางน้ำตาล", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์4 (ทอง)/9.PNG", category: "pendant4" },
+
+  // จี้สีทอง 5 (pendant5)
+  { id: 31, name: "จี้ผีเสื้อทอง", price: 0, stock: 4, img: "im6/จี้เบอร์ 5/ทอง/1.PNG", category: "pendant5" },
+  { id: 32, name: "จี้ดาวสี่แฉก", price: 0, stock: 4, img: "im6/จี้เบอร์ 5/ทอง/2.PNG", category: "pendant5" },
+
+  // จี้เงิน 1 (pendant6)
+  { id: 33, name: "จี้หัวใจสีเงิน", price: 0, stock: 4, img: "im/จี้เบอร์1 (เงิน)/1.png", category: "pendant6" },
+  { id: 34, name: "จี้ผี้เสื้อเงิน", price: 0, stock: 4, img: "im/จี้เบอร์1 (เงิน)/2.png", category: "pendant6" },
+  { id: 35, name: "จี้ไข่มุกเงิน", price: 0, stock: 4, img: "im/จี้เบอร์1 (เงิน)/3.png", category: "pendant6" },
+  { id: 37, name: "จี้ดาวเงิน", price: 0, stock: 4, img: "im/จี้เบอร์1 (เงิน)/5.png", category: "pendant6" },
+
+  // จี้เงิน 2 (pendant7)
+  { id: 38, name: "จี้สตอเบอร์รี่เงิน", price: 0, stock: 4, img: "im3/จี้เบอร์2 (เงิน)/1.PNG", category: "pendant7" },
+  { id: 39, name: "จี้ดอกไม้เพชร", price: 0, stock: 4, img: "im3/จี้เบอร์2 (เงิน)/2.PNG", category: "pendant7" },
+  { id: 40, name: "จี้หัวใจเพชร", price: 0, stock: 4, img: "im3/จี้เบอร์2 (เงิน)/3.PNG", category: "pendant7" },
+  { id: 41, name: "จี้หัวใจสีเงิน", price: 0, stock: 4, img: "im3/จี้เบอร์2 (เงิน)/4.PNG", category: "pendant7" },
+
+  // จี้เงิน 3 (pendant8)
+  { id: 42, name: "จี้ดอกไม้สีเงิน", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/1.PNG", category: "pendant8" },
+  { id: 43, name: "จี้โลมาสีเงิน", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/2.PNG", category: "pendant8" },
+  { id: 44, name: "จี้วงรีดำเงิน", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/3.PNG", category: "pendant8" },
+  { id: 45, name: "จี้ดาวเสาร์สีเงิน", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/4.PNG", category: "pendant8" },
+  { id: 46, name: "จี้ดาว 8 แฉก ", price: 0, stock: 4, img: "im4/จี้เบอร์3/จี้เบอร์ 3 (เงิน)/5.PNG", category: "pendant8" },
+
+  // จี้เงิน 4 (pendant9)
+  { id: 47, name: "จี้หัวใจละลาย", price: 0, stock: 4, img: "im5/จี้เบอร์4/จี้เบอร์ 4 (เงิน)/1.png", category: "pendant9" },
+
+  // จี้เงิน 5 (pendant10)
+  { id: 48, name: "จี้หัวใจสีดำ", price: 0, stock: 4, img: "im6/จี้เบอร์ 5/เงิน/1.PNG", category: "pendant10" },
+  { id: 49, name: "จี้ผีเสื้อสีเงิน", price: 0, stock: 4, img: "im6/จี้เบอร์ 5/เงิน/2.PNG", category: "pendant10" }
+    ];
+
+    const store = {
+      getCart() {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        return cart;
+      },
+      setCart(c) {
+        localStorage.setItem("cart", JSON.stringify(c));
+      },
+      getStock() {
+        return JSON.parse(localStorage.getItem("productStock") || "null");
+      },
+      setStock(stockList) {
+        localStorage.setItem("productStock", JSON.stringify(stockList));
+      }
+    };
+
+    // โหลด stock จาก localStorage หรือใช้ default ถ้ายังไม่มี
+    function getProductStock() {
+      let productStock = store.getStock();
+      if (!productStock) {
+        productStock = productData.map(p => ({ id: p.id, stock: p.stock }));
+        store.setStock(productStock);
+      }
+      return productStock;
+    }
+
+    const necklaceGrid = document.getElementById("necklace-grid");
+    const neck2Grid = document.getElementById("neck2-grid");
+    const pendantGrid = document.getElementById("pendant-grid");
+    const pendant2Grid = document.getElementById("pendant2-grid");
+    const pendant3Grid = document.getElementById("pendant3-grid");
+    const pendant4Grid = document.getElementById("pendant4-grid");
+    const pendant5Grid = document.getElementById("pendant5-grid");
+    const pendant6Grid = document.getElementById("pendant6-grid");
+    const pendant7Grid = document.getElementById("pendant7-grid");
+    const pendant8Grid = document.getElementById("pendant8-grid");
+    const pendant9Grid = document.getElementById("pendant9-grid");
+    const pendant10Grid = document.getElementById("pendant10-grid");
+    const searchBox = document.getElementById("search");
+    const mobileSearchBox = document.getElementById("mobile-search");
+    const cartBar = document.getElementById("cart-bar");
+    const cartInfo = document.getElementById("cart-info");
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("expandedImage");
+    const closeBtn = document.querySelector(".close");
+
+    // Mobile Menu Functions
+    function toggleMenu() {
+      const slideMenu = document.getElementById('slideMenu');
+      const overlay = document.querySelector('.menu-overlay');
+      
+      slideMenu.classList.toggle('active');
+      overlay.classList.toggle('active');
+      
+      if (slideMenu.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    }
+    
+    function closeMenu() {
+      const slideMenu = document.getElementById('slideMenu');
+      const overlay = document.querySelector('.menu-overlay');
+      
+      slideMenu.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    function goToBuyPendant() {
+      window.location.href = 'jee.html';
+    }
+
+    // ฟังก์ชันรีเฟรชข้อมูลสินค้าและ stock
+    function getSampleProducts() {
+      const productStock = getProductStock();
+      return productData.map(p => {
+        const s = productStock.find(x => x.id === p.id);
+        return { ...p, stock: s ? s.stock : p.stock };
+      });
+    }
+
+    function renderCart() {
+      const cart = store.getCart();
+      if (cart.length) {
+        const total = cart.reduce((s, i) => s + i.qty, 0);
+        const totalPrice = cart.reduce((s, i) => s + (i.qty * i.price), 0);
+        cartInfo.innerHTML = `<i class="fas fa-shopping-cart"></i> ${total} รายการ | ${totalPrice.toLocaleString()}฿`;
+        cartBar.classList.add("show");
+      } else {
+        cartBar.classList.remove("show");
+      }
+    }
+
+    function draw(filter = "") {
+      necklaceGrid.innerHTML = "";
+      neck2Grid.innerHTML = "";
+      pendantGrid.innerHTML = "";
+      pendant2Grid.innerHTML = "";
+      pendant3Grid.innerHTML = "";
+      pendant4Grid.innerHTML = "";
+      pendant5Grid.innerHTML = "";
+      pendant6Grid.innerHTML = "";
+      pendant7Grid.innerHTML = "";
+      pendant8Grid.innerHTML = "";
+      pendant9Grid.innerHTML = "";
+      pendant10Grid.innerHTML = "";
+      
+      const sampleProducts = getSampleProducts();
+
+      const filteredProducts = sampleProducts
+        .filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+      
+      // แบ่งสินค้าตามหมวดหมู่
+      const necklaces = filteredProducts.filter(p => p.category === 'necklace');
+      const neck2 = filteredProducts.filter(p => p.category === 'neck2');
+      const pendants = filteredProducts.filter(p => p.category === 'pendant');
+      const pendants2 = filteredProducts.filter(p => p.category === 'pendant2');
+      const pendants3 = filteredProducts.filter(p => p.category === 'pendant3');
+      const pendants4 = filteredProducts.filter(p => p.category === 'pendant4');
+      const pendants5 = filteredProducts.filter(p => p.category === 'pendant5');
+      const pendants6 = filteredProducts.filter(p => p.category === 'pendant6');
+      const pendants7= filteredProducts.filter(p => p.category === 'pendant7');
+      const pendants8 = filteredProducts.filter(p => p.category === 'pendant8');
+      const pendants9 = filteredProducts.filter(p => p.category === 'pendant9');
+      const pendants10 = filteredProducts.filter(p => p.category === 'pendant10');
+
+      // เรนเดอร์สร้อย
+      necklaces.forEach(p => {
+        const card = createProductCard(p);
+        necklaceGrid.appendChild(card);
+      });
+
+      neck2.forEach(p => {
+        const card = createProductCard(p);
+        neck2Grid.appendChild(card);
+      });
+
+      // เรนเดอร์จี้ใส่สร้อย
+      pendants.forEach(p => {
+        const card = createProductCard(p);
+        pendantGrid.appendChild(card);
+      });
+      pendants2.forEach(p => {
+        const card = createProductCard(p);
+        pendant2Grid.appendChild(card);
+      });
+      pendants3.forEach(p => {
+        const card = createProductCard(p);
+        pendant3Grid.appendChild(card);
+      });
+      pendants4.forEach(p => {
+        const card = createProductCard(p);
+        pendant4Grid.appendChild(card);
+      });
+      pendants5.forEach(p => {
+        const card = createProductCard(p);
+        pendant5Grid.appendChild(card);
+      });
+      pendants6.forEach(p => {
+        const card = createProductCard(p);
+        pendant6Grid.appendChild(card);
+      });
+      pendants7.forEach(p => {
+        const card = createProductCard(p);
+        pendant7Grid.appendChild(card);
+      });
+      pendants8.forEach(p => {
+        const card = createProductCard(p);
+        pendant8Grid.appendChild(card);
+      });
+      pendants9.forEach(p => {
+        const card = createProductCard(p);
+        pendant9Grid.appendChild(card);
+      });
+      pendants10.forEach(p => {
+        const card = createProductCard(p);
+        pendant10Grid.appendChild(card);
+      });
+    }
+
+    function createProductCard(p) {
+      const card = document.createElement("div");
+      card.className = "card";
+      const isOut = p.stock === 0;
+
+      card.innerHTML = `
+        <div class="card-img-container">
+          <img src="${p.img}" alt="${p.name}" loading="lazy">
+          <div class="zoom-icon"><i class="fas fa-search-plus"></i></div>
+        </div>
+        <h4>${p.name}</h4>
+        <p class="price">${p.price.toLocaleString()}฿</p>
+        <p class="stock ${isOut ? 'out-of-stock' : 'in-stock'}">
+          <i class="fas fa-${isOut ? 'times-circle' : 'check-circle'}"></i> ${isOut ? "สินค้าหมด" : `เหลือ ${p.stock} ชิ้น`}
+        </p>
+        <button class="add-btn" ${isOut ? "disabled" : ""}>
+          <i class="fas fa-plus"></i> ${isOut ? "หมด" : "เพิ่มในตะกร้า"}
+        </button>
+      `;
+
+      const btn = card.querySelector(".add-btn");
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        if (p.stock === 0) return alert("สินค้าหมดในสต็อก");
+
+        const cart = store.getCart();
+        const found = cart.find(i => i.id === p.id);
+        const qtyInCart = found ? found.qty : 0;
+
+        if (qtyInCart >= p.stock) return alert("สินค้าหมดในสต็อก");
+
+        // ตรวจสอบว่าเป็นสร้อยหรือไม่
+        const isNecklace = ['necklace', 'neck2'].includes(p.category);
+        
+        // ถ้าเป็นสร้อย ให้ไปที่หน้า dital.html เพื่อเลือกขนาด
+        if (isNecklace) {
+          // เก็บข้อมูลสินค้าที่เลือกไว้ใน localStorage
+          localStorage.setItem("selectedProduct", JSON.stringify({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            img: p.img,
+            category: p.category
+          }));
+          
+          // นำผู้ใช้ไปยังหน้า dital.html
+          window.location.href = "dital.html";
+          return;
+        }
+
+        // ตรวจสอบว่าเป็นจี้หรือไม่ (pendant, pendant2, pendant3, ..., pendant10)
+        const isPendant = ['pendant', 'pendant2', 'pendant3', 'pendant4', 'pendant5', 
+                          'pendant6', 'pendant7', 'pendant8', 'pendant9', 'pendant10'].includes(p.category);
+
+        if (isPendant) {
+          // นับจำนวนสร้อยในตะกร้า
+          const totalNecklaces = cart
+            .filter(i => {
+              const cat = productData.find(prod => prod.id === i.id)?.category;
+              return cat === 'necklace' || cat === 'neck2';
+            })
+            .reduce((sum, i) => sum + i.qty, 0);
+
+          if (totalNecklaces === 0) {
+            return alert("กรุณาเลือกสร้อยก่อนเพิ่มีจี้");
+          }
+
+          // นับจำนวนจี้ทั้งหมดในตะกร้า
+          const totalPendants = cart
+            .filter(i => {
+              const cat = productData.find(prod => prod.id === i.id)?.category;
+              return cat && ['pendant', 'pendant2', 'pendant3', 'pendant4', 'pendant5', 
+                           'pendant6', 'pendant7', 'pendant8', 'pendant9', 'pendant10'].includes(cat);
+            })
+            .reduce((sum, i) => sum + i.qty, 0);
+
+          const maxAllowedPendants = totalNecklaces * 8;
+          if (totalPendants >= maxAllowedPendants) {
+            return alert(`คุณสามารถเลือกจี้ได้สูงสุด ${maxAllowedPendants} ชิ้น (${totalNecklaces} สร้อย x 8 จี้)`);
+          }
+        }
+
+        // เพิ่มสินค้าลงตะกร้า
+        found ? found.qty++ : cart.push({ 
+          id: p.id, 
+          name: p.name, 
+          price: p.price, 
+          qty: 1,
+          img: p.img
+        });
+
+        // อัปเดต stock ใน localStorage
+        let productStock = getProductStock();
+        const index = productStock.findIndex(prod => prod.id === p.id);
+        if (index >= 0) {
+          productStock[index].stock--;
+        }
+        store.setStock(productStock);
+        store.setCart(cart);
+
+        draw(searchBox.value || mobileSearchBox.value);
+        renderCart();
+
+        // แสดง animation เมื่อเพิ่มสินค้า
+        btn.innerHTML = '<i class="fas fa-check"></i> เพิ่มแล้ว';
+        btn.style.background = '#2ecc71';
+        setTimeout(() => {
+          btn.innerHTML = `<i class="fas fa-plus"></i> เพิ่มในตะกร้า`;
+          btn.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+        }, 1000);
+      };
+
+      // เพิ่ม Event สำหรับขยายรูปภาพ
+      const imgContainer = card.querySelector(".card-img-container");
+      imgContainer.onclick = (e) => {
+        e.stopPropagation();
+        modal.style.display = "block";
+        modalImg.src = p.img;
+        modalImg.alt = p.name;
+        document.body.style.overflow = 'hidden';
+      };
+
+      return card;
+    }
+
+    // ปิด Modal เมื่อคลิกปุ่ม X
+    closeBtn.onclick = function() {
+      modal.style.display = "none";
+      document.body.style.overflow = 'auto';
+    }
+
+    // ปิด Modal เมื่อคลิกนอกรูปภาพ
+    modal.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+   document.querySelector(".review-btn").onclick = () => {
+  window.location.href = "review.html";
+};
+
+
+    // เริ่มต้นแสดงผล
+    draw();
+    
+    // Event listeners for search
+    if (searchBox) {
+      searchBox.oninput = e => draw(e.target.value);
+    }
+    
+    if (mobileSearchBox) {
+      mobileSearchBox.oninput = e => {
+        draw(e.target.value);
+        // Sync with desktop search if exists
+        if (searchBox) {
+          searchBox.value = e.target.value;
+        }
+      };
+    }
+    
+    renderCart();
+ </script>
+</body>
+</html>
